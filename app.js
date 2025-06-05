@@ -3,12 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const eventRouter = require('./Routs/eventRout.js');
-const producerRouter = require('./Routs/producerRout.js');
+const serviceRouter = require('./Routs/ServiceRout.js');
+const userRouter = require('./Routs/UserRout.js');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect("mongodb://localhost:27017/EventProduction");
+        await mongoose.connect("mongodb://localhost:27017/BusinessManagement", );
         console.log('connect to DB');
 
     }
@@ -23,8 +23,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/event', eventRouter);
-app.use('/producer', producerRouter);
+app.use('/service', serviceRouter);
+app.use('/user', userRouter);
 
 app.listen(3000, () => {
     console.log('server is running');

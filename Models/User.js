@@ -3,15 +3,19 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const producerSchema = new Schema({
+const userSchema = new Schema({
     name: String,
     email: {
+        type: String,
+        required: true
+    },
+    password: {
         type: String,
         required: true
     },
     phone: String,
     description: String,
 });
-module.exports= mongoose.model('Producer', producerSchema);
+module.exports= mongoose.model('User', userSchema);
 
 
