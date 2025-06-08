@@ -7,14 +7,18 @@ const userSchema = new Schema({
     name: String,
     email: {
         type: String,
-        required: true
+        required: true ,
+        unique: true // מונע כפילויות
     },
     password: {
         type: String,
         required: true
     },
-    phone: String,
-    description: String,
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    }
 });
 module.exports= mongoose.model('User', userSchema);
 

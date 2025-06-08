@@ -10,8 +10,7 @@ const createUser = async(userData) => {
         name: userData.name,
         email: userData.email,
         password: bcrypt.hashSync(userData.password, 10),
-        phone: userData.phone,
-        description: userData.description,
+     
     });
     return await user.save();
 };
@@ -20,8 +19,7 @@ const updateUser = async (email, userData) => {
     return await User.updateOne({ email: email }, {
         name: userData.name,
         password: bcrypt.hashSync(userData.password, 10),
-        phone: userData.phone,
-        description: userData.description,
+     
     });
 }
 
@@ -30,4 +28,5 @@ module.exports = {
     createUser,
     updateUser
 };
+
 
