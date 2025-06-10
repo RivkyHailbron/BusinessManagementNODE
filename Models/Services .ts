@@ -1,7 +1,7 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-const Schema = mongoose.Schema;
 
 const serviceSchema = new Schema({
     id: {
@@ -16,7 +16,7 @@ const serviceSchema = new Schema({
     }
 
 });
-module.exports= mongoose.model('Service', serviceSchema);
-
+const Service = mongoose.model('Service', serviceSchema);
+export default Service;
 
 

@@ -1,6 +1,7 @@
 const authService = require('../Services/AuthService');
 
-async function postSignUp(req, res) {
+async function postSignUp(req: Request, res:Response) {
+  
   const {name,  email, password } = req.body;
   try {
     const user = await authService.signUp(name, email, password);

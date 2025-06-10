@@ -1,10 +1,12 @@
+import { NextFunction } from "express";
+
 const jwt = require('jsonwebtoken');
 
 const SECRET_KEY = process.env.SECRET_KEY ;
 
 // אימות – מוודא שיש טוקן תקין
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+function authenticateToken(req:Request, res :Response, next :NextFunction) {
+  const authHeader : any  = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Missing token' });
 
   const token = authHeader.split(' ')[1];

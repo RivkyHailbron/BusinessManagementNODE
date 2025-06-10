@@ -1,13 +1,11 @@
-
-const mongoose = require('mongoose');
-
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
 const userSchema = new Schema({
     name: String,
     email: {
         type: String,
-        required: true ,
+        required: true,
         unique: true // מונע כפילויות
     },
     password: {
@@ -20,6 +18,6 @@ const userSchema = new Schema({
         default: 'user'
     }
 });
-module.exports= mongoose.model('User', userSchema);
 
-
+const User = mongoose.model('User', userSchema);
+export default User;
