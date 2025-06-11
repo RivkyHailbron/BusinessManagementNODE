@@ -1,75 +1,75 @@
+import { Request, Response } from 'express';
+import Service from '../Models/Services '; // ודא שאין רווח בסוף שם הקובץ
 
-const Service = require('../Models/Services ');
-// get service - רשימה של ארועים
-const getServices = async (req, res) => {
+// get service - רשימה של אירועים
+export const getServices = async (req: Request, res: Response) => {
     try {
-        
-
+        const services = await Service.find();
         res.send(services);
-    }
-    catch (e) {
-        console.log(e);
+    } catch (e) {
+        console.error(e);
         res.status(404).send('services not found');
     }
 };
-// get service/:id - פרטי ארוע בודד
-const getService = async (req, res) => {
+
+// get service/:id - פרטי אירוע בודד
+export const getService = async (req: Request, res: Response) => {
     try {
         let service = await Service.findOne({ id: req.params.id });
-        service = {
+
+        if (!service) {
+            return res.status(404).send('service not found');
+        }
+
+        const result = {
             id: service.id,
             name: service.name,
             description: service.description,
             producerEmail: service.producerEmail
         };
-        res.send(service);
-    }
-    catch (e) {
-        console.log(e);
+
+        res.send(result);
+    } catch (e) {
+        console.error(e);
         res.status(404).send('service not found');
     }
-}
-// post service - יצירת ארוע
-const postService = async (req, res) => {
+};
+
+// post service - יצירת אירוע
+export const postService = async (req: Request, res: Response) => {
     try {
-        const service = new Service({
-            id: req.body.id,
-            name: req.body.name,
-            description: req.body.description,
-            producerEmail: req.body.producerEmail
-        });
+        const { id, name, description, producerEmail } = req.body;
+
+        const service = new Service({ id, name, description, producerEmail });
         await service.save();
         res.send(service);
-    }
-    catch (e) {
-        console.log(e);
+    } catch (e) {
+        console.error(e);
         res.status(400).send('invalid data');
     }
 };
-// put service/:id - עדכון ארוע
-const putService = async (req, res) => {
+
+// put service/:id - עדכון אירוע
+export const putService = async (req: Request, res: Response) => {
     try {
-        await Service.updateOne({ id: req.params.id }, {
-            name: req.body.name,
-            description: req.body.description,
-            producerEmail: req.body.producerEmail
-        });
+        const { name, description, producerEmail } = req.body;
+
+        await Service.updateOne({ id: req.params.id }, { name, description, producerEmail });
         res.send('service updated');
-    }
-    catch (e) {
-        console.log(e);
+    } catch (e) {
+        console.error(e);
         res.status(400).send('invalid data');
     }
-}
-// delete service/:id  - מחיקת ארוע
-const deleteService = async (req, res) => {
+};
+
+// delete service/:id - מחיקת אירוע
+export const deleteService = async (req: Request, res: Response) => {
     try {
         await Service.deleteOne({ id: req.params.id });
         res.send('service deleted');
-    }
-    catch (e) {
-        console.log(e);
+    } catch (e) {
+        console.error(e);
         res.status(404).send('service not found');
     }
 };
-module.exports = { getServices, getService, postService, putService, deleteService };
+

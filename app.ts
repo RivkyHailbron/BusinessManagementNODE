@@ -1,42 +1,45 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const serviceRouter = require('./Routs/ServiceRout.js');
-const userRouter = require('./Routs/UserRout.js');
-const authRouter = require('./Routs/AuthRout.js');
-const {authenticateToken , authorizeRoles} = require('./Middlewares/AuthMiddleware.js');
-require('dotenv').config();
+import express, { Application } from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+import serviceRouter from './Routs/ServiceRout';
+import userRouter from './Routs/UserRout';
+import authRouter from './Routs/AuthRout';
+import { authenticateToken, authorizeRoles } from './Middlewares/AuthMiddleware';
+
+dotenv.config();
+
+const app: Application = express();
 
 const connectDB = async () => {
-    try {
-        
-        await mongoose.connect(process.env.MONGOOSE_URI);
-        console.log('connect to DB');
-
-    }
-    catch (error) {
-        console.log(error);
-    }
+  try {
+    const uri = process.env.MONGOOSE_URI;
+    if (!uri) throw new Error('Missing MONGOOSE_URI in environment variables');
+    await mongoose.connect(uri);
+    console.log('Connected to DB');
+  } catch (error) {
+    console.error('DB Connection Error:', error);
+  }
 };
 
+// Connect to DB
 connectDB();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Routes
+app.use('/auth', authRouter);
+app.use('/service', authenticateToken, serviceRouter);
+app.use('/user', authenticateToken, authorizeRoles('admin'), userRouter);
 
-app.use('/auth', authRouter); 
-app.use('/service',authenticateToken, serviceRouter);
-app.use('/user',authenticateToken,authorizeRoles('admin'), userRouter);
-
-app.listen(3000, () => {
-    console.log('server is running');
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
-

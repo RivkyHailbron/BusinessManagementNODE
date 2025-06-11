@@ -2,11 +2,11 @@ import { NextFunction } from "express";
 
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = process.env.SECRET_KEY ;
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // אימות – מוודא שיש טוקן תקין
-function authenticateToken(req:Request, res :Response, next :NextFunction) {
-  const authHeader : any  = req.headers.authorization;
+export const authenticateToken = (req: any, res: any, next: NextFunction) => {
+  const authHeader: any = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Missing token' });
 
   const token = authHeader.split(' ')[1];
@@ -22,8 +22,8 @@ function authenticateToken(req:Request, res :Response, next :NextFunction) {
 }
 
 // הרשאה – בודק אם המשתמש הוא מסוג מסוים (למשל admin)
-function authorizeRoles(...allowedRoles) {
-  return (req, res, next) => {
+export const authorizeRoles = (...allowedRoles: any) => {
+  return (req: any, res: any, next: NextFunction) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ error: 'Access denied' });
     }

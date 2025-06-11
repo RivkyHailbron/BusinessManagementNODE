@@ -1,8 +1,8 @@
 
-const userService = require('../Services/userService.js');
+const userService = require('../Services/userService.ts');
 
 // get User - מחזיר פרטי בעל עסק בודד, לפי האימייל של הבעל עסק
-const getUser = async (req, res) => {
+export const getUser = async (req:any, res:any) => {
     try {
         const user = await userService.getUserByEmail(req.params.email);
         if(!user) {
@@ -17,7 +17,7 @@ const getUser = async (req, res) => {
 }
 
 // post User - יצירת בעל עסק חדש
-const postUser = async (req, res) => {
+export const postUser = async (req:any, res:any) => {
     try {
         await userService.createUser(req.body);
         console.log('User created:', req.body);
@@ -30,7 +30,7 @@ const postUser = async (req, res) => {
 };
 
 // put User - עדכון פרטי בעל עסק
-const putUser = async (req, res) => {
+export  const putUser = async (req:any, res:any) => {
     try {
         await userService.updateUserByEmail(req.params.email, req.body);
         res.status(200).send('User updated');
@@ -41,4 +41,3 @@ const putUser = async (req, res) => {
 };
 
 
-module.exports = { getUser, postUser, putUser };

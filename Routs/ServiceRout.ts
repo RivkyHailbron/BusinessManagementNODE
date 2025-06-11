@@ -5,7 +5,7 @@ const { getServices,
     getService,
     postService,
     putService,
-    deleteService } = require('../Controllers/ServiceController.js');
+    deleteService } = require('../Controllers/ServiceController.ts');
 
 router.get('/', getServices);
 router.get('/:id', getService);
@@ -13,4 +13,4 @@ router.post('/', postService);
 router.put('/:id', putService);
 router.delete('/:id', deleteService);
 
-module.exports = router;
+export default router;
