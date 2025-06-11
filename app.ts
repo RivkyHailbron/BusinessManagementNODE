@@ -8,7 +8,7 @@ import serviceRouter from './Routs/ServiceRout';
 import userRouter from './Routs/UserRout';
 import authRouter from './Routs/AuthRout';
 import { authenticateToken, authorizeRoles } from './Middlewares/AuthMiddleware';
-
+import { error } from './Middlewares/ErrorMiddleware'
 dotenv.config();
 
 const app: Application = express();
@@ -37,6 +37,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/auth', authRouter);
 app.use('/service', authenticateToken, serviceRouter);
 app.use('/user', authenticateToken, authorizeRoles('admin'), userRouter);
+
+app.use(error)
 
 // Start server
 const PORT = process.env.PORT || 3000;

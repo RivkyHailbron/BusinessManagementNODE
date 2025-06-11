@@ -7,7 +7,7 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY as string;
 
-export async function signUp(name: string, email: string, password: string) {
+const signUp = async(name: string, email: string, password: string)=> {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw new Error('User already exists');
 
@@ -17,7 +17,7 @@ export async function signUp(name: string, email: string, password: string) {
   return await newUser.save();
 }
 
-export async function signIn(email: string, password: string) {
+const signIn = async (email: string, password: string) => {
   const user = await User.findOne({ email });
   if (!user) throw new Error('User not found');
 
@@ -32,4 +32,9 @@ export async function signIn(email: string, password: string) {
 
   return { user, token };
 }
+
+export default {
+  signUp,
+  signIn,
+};
 

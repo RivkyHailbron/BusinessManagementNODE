@@ -1,75 +1,59 @@
 import { Request, Response } from 'express';
-import Service from '../Models/Services '; // ודא שאין רווח בסוף שם הקובץ
+import serviseService from '../Services/ServiceService'
 
 // get service - רשימה של אירועים
 export const getServices = async (req: Request, res: Response) => {
     try {
-        const services = await Service.find();
+        const services = serviseService.getServices();
         res.send(services);
-    } catch (e) {
-        console.error(e);
-        res.status(404).send('services not found');
-    }
-};
+    } catch (e: any) {
+        throw {
+            statusCode: 404, message: 'Error fetching services: ' + e.message
+        }
+    };
+}
 
-// get service/:id - פרטי אירוע בודד
+// get service/:id - 
 export const getService = async (req: Request, res: Response) => {
     try {
-        let service = await Service.findOne({ id: req.params.id });
+        const service = await serviseService.getServiceById(req.params.id);
 
         if (!service) {
-            return res.status(404).send('service not found');
+            throw { statusCode: 404, message: 'Service not found' };
         }
-
-        const result = {
-            id: service.id,
-            name: service.name,
-            description: service.description,
-            producerEmail: service.producerEmail
-        };
-
-        res.send(result);
-    } catch (e) {
-        console.error(e);
-        res.status(404).send('service not found');
+        res.send(service);
+    } catch (e: any) {
+        throw { statusCode: 404, message: 'Error fetching service: ' + e.message };
     }
 };
 
 // post service - יצירת אירוע
 export const postService = async (req: Request, res: Response) => {
     try {
-        const { id, name, description, producerEmail } = req.body;
+        await serviseService.postService(req.body);
+    } catch (e: any) {
+        throw { statusCode: 400, message: 'Error creating service: ' + e.message };
 
-        const service = new Service({ id, name, description, producerEmail });
-        await service.save();
-        res.send(service);
-    } catch (e) {
-        console.error(e);
-        res.status(400).send('invalid data');
     }
 };
 
 // put service/:id - עדכון אירוע
 export const putService = async (req: Request, res: Response) => {
     try {
-        const { name, description, producerEmail } = req.body;
-
-        await Service.updateOne({ id: req.params.id }, { name, description, producerEmail });
+        await serviseService.putService(req.params.id, req.body);
         res.send('service updated');
-    } catch (e) {
-        console.error(e);
-        res.status(400).send('invalid data');
+    } catch {
+        throw { statusCode: 400, message: 'Error updating service' };
     }
 };
 
 // delete service/:id - מחיקת אירוע
 export const deleteService = async (req: Request, res: Response) => {
     try {
-        await Service.deleteOne({ id: req.params.id });
+        await serviseService.deleteService(req.params.id);
         res.send('service deleted');
-    } catch (e) {
-        console.error(e);
-        res.status(404).send('service not found');
+    } catch (e: any) {
+        throw { statusCode: 404, message: 'Error deleting service: ' + e.message };
     }
 };
 

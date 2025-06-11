@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
-import {signIn, signUp} from '../Services/AuthService';
+import authService from '../Services/AuthService';
 
-export async function postSignUp(req: Request, res: Response): Promise<void> {
+export const postSignUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   try {
-    const user = await signUp(name, email, password);
+    const user = await authService.signUp(name, email, password);
     res.status(201).json({ message: 'User registered', user });
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    throw { statusCode: 400, message: err.message };
   }
 }
 
-export async function postSignIn(req: Request, res: Response): Promise<void> {
+export const postSignIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
-    const { user, token } = await signIn(email, password);
+    const { user, token } = await authService.signIn(email, password);
     res.status(200).json({ message: 'Login successful', user, token });
   } catch (err: any) {
-    res.status(401).json({ error: err.message });
+    throw { statusCode: 401, message: err.message };
   }
 }
