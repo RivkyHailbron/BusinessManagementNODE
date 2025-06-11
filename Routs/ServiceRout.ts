@@ -1,16 +1,20 @@
 
-const exspress = require('express');
+import exspress from 'express';
 const router = exspress.Router();
-const { getServices,
+import {
+    getServices,
     getService,
     postService,
     putService,
-    deleteService } = require('../Controllers/ServiceController.ts');
+    deleteService
+} from '../Controllers/ServiceController';
+import { authorizeRoles } from '../Middlewares/AuthMiddleware';
+
 
 router.get('/', getServices);
 router.get('/:id', getService);
-router.post('/', postService);
-router.put('/:id', putService);
-router.delete('/:id', deleteService);
+router.post('/', authorizeRoles('admin'), postService);
+router.put('/:id', authorizeRoles('admin'), putService);
+router.delete('/:id', authorizeRoles('admin'), deleteService);
 
 export default router;

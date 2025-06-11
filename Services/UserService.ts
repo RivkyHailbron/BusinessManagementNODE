@@ -4,6 +4,9 @@ import bcrypt from 'bcrypt';
 const getUserByEmail = async (email : String) => {
     return await User.findOne({ email : email });
 }
+const getUsers = async () => {
+    return await User.find();
+}
 
 const createUser = async(userData: any) => {
     

@@ -22,7 +22,7 @@ const signIn = async (email: string, password: string) => {
   if (!user) throw new Error('User not found');
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error('Invalid credentials');
+  if (!isMatch) throw { message: 'Invalid credentials' };
 
   const token = jwt.sign(
     { userId: user._id, email: user.email, role: user.role },

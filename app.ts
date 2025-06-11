@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import serviceRouter from './Routs/ServiceRout';
 import userRouter from './Routs/UserRout';
 import authRouter from './Routs/AuthRout';
+import businessRouter from './Routs/BusinessRout';
 import { authenticateToken, authorizeRoles } from './Middlewares/AuthMiddleware';
 import { error } from './Middlewares/ErrorMiddleware'
 dotenv.config();
@@ -36,8 +37,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Routes
 app.use('/auth', authRouter);
 app.use('/service', authenticateToken, serviceRouter);
-app.use('/user', authenticateToken, authorizeRoles('admin'), userRouter);
-
+app.use('/user', authenticateToken,  userRouter);
+app.use('/business', authenticateToken, authorizeRoles('admin'), businessRouter);
 app.use(error)
 
 // Start server

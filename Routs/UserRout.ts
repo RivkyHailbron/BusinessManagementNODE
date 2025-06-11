@@ -4,11 +4,13 @@ import {
   postUser,
   putUser
 } from '../Controllers/UserController'
+import { authorizeRoles, isAuthorizeUser } from '../Middlewares/AuthMiddleware';
+
 
 const router = express.Router();
 
-router.get('/:email', getUser);
-router.post('/', postUser);
-router.put('/:email', putUser);
+router.get('/:email', isAuthorizeUser, getUser);
+router.post('/', isAuthorizeUser, postUser);
+router.put('/:email', isAuthorizeUser, putUser);
 
 export default router;

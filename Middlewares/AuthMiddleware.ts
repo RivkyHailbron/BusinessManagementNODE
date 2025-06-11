@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
 // אימות – מוודא שיש טוקן תקין
+
 export const authenticateToken = (req: any, res: any, next: NextFunction) => {
   const authHeader: any = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Missing token' });
@@ -30,8 +31,15 @@ export const authorizeRoles = (...allowedRoles: any) => {
     next();
   };
 }
+// ווידוי המשתמש
+export const isAuthorizeUser = (req: any, res: any, next: NextFunction) => {
+  const targerEmail = req.params.email;
+  const currentUser = req.User
+  if (currentUser.role === 'admin ' || currentUser.email !== targerEmail) {
+    return next();
+  }
+  return res.status(403).json({ error: 'Access Denied: You can only act on your own account. ' });
+}
 
-module.exports = {
-  authenticateToken,
-  authorizeRoles
-};
+
+
