@@ -27,7 +27,7 @@ export const getMeeting = async (req: Request, res: Response, next: NextFunction
 }
 export const postMeeting = async (req: any, res: any, next: NextFunction) => {
     try {
-        await meetingService.createMeeting(req.body);
+        await meetingService.createMeeting(req.body , res);
         console.log('Meeting created:', req.body);
 
         res.status(201).send('Meeting created');
@@ -40,7 +40,7 @@ export const postMeeting = async (req: any, res: any, next: NextFunction) => {
 // put Meeting - עדכון פרטי בעל עסק
 export const putMeeting = async (req: any, res: any) => {
     try {
-        await meetingService.updateMeetingByEmail(req.params.email, req.body);
+        await meetingService.updateMeetingById(req.params.id,req.params , req.body);
         res.status(200).send('Meeting updated');
     } catch {
         throw { statusCode: 400, message: 'Bad request' };
