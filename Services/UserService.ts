@@ -28,7 +28,8 @@ const updateUser = async (email: String, userData : any) => {
     });
 }
 
-module.exports = {
+export default {
+    getUsers, 
     getUserByEmail,
     createUser,
     updateUser
