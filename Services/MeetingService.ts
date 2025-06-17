@@ -1,9 +1,10 @@
-import Meeting from '../Models/Meeting'
-import { nanoid } from 'nanoid'
+import Meeting from '../Models/Meeting';
+const { v4: uuidv4 } = require('uuid');
+
 const getMeetings = async () => {
     const meetings = await Meeting.find();
     return meetings;
-}
+};
 
 const getMeeting = async (id: string) => {
     const meeting = await Meeting.findById(id);
@@ -18,7 +19,7 @@ const createMeeting = async (meetingData: any, res: any) => {
         return res.status(400).json({ message: 'Meeting overlaps with an existing one.' });
     }
 
-    const id = nanoid();
+    const id = uuidv4();
     const meeting = new Meeting({ id, serviceID, date, time, duration, userEmail });
 
     try {
@@ -37,19 +38,11 @@ const updateMeetingById = async (id: string, meetingData: any, res: any) => {
         return res.status(404).json({ message: 'Meeting not found.' });
     }
 
-    const isOverlapping = await hasOverlappingMeeting(
-        serviceID,
-        date,
-        time,
-        duration,
-        id
-    );
-
+    const isOverlapping = await hasOverlappingMeeting(serviceID, date, time, duration, id);
     if (isOverlapping) {
         return res.status(400).json({ message: 'Meeting overlaps with existing meeting.' });
     }
 
-    // עדכון בפועל
     meeting.serviceID = serviceID;
     meeting.date = date;
     meeting.time = time;
@@ -70,19 +63,19 @@ const deleteMeeting = async (id: string) => {
 
 const hasOverlappingMeeting = async (
     serviceID: string,
-    data: Date,
+    date: Date,
     timeStr: string,
     duration: number,
     excludeId?: string
 ) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
-    const startTime = new Date(data);
+    const startTime = new Date(date);
     startTime.setHours(hours, minutes, 0, 0);
     const endTime = new Date(startTime.getTime() + duration * 60000);
 
     const query: any = {
         serviceID,
-        data,
+        date,
         ...(excludeId && { id: { $ne: excludeId } })
     };
 
@@ -103,5 +96,4 @@ export default {
     createMeeting,
     updateMeetingById,
     deleteMeeting
-
-}
+};
