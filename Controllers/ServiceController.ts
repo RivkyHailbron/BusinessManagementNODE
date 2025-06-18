@@ -4,7 +4,7 @@ import serviseService from '../Services/ServiceService'
 // get service - רשימה של אירועים
 export const getServices = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const services = serviseService.getServices();
+        const services = await serviseService.getServices();
         res.send(services);
     } catch (e: any) {
         next({ statusCode: 404, message: 'Error fetching services: ' + e.message });
@@ -29,6 +29,7 @@ export const getService = async (req: Request, res: Response, next: NextFunction
 export const postService = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await serviseService.postService(req.body);
+        res.status(201).send('Service created');
     } catch (e: any) {
         next({ statusCode: 400, message: 'Error creating service: ' + e.message });
 
