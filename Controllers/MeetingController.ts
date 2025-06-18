@@ -1,61 +1,53 @@
-
 import { Request, Response, NextFunction } from 'express';
 import meetingService from '../Services/MeetingService';
 
-export const getMeetings = async (req: Request, res: Response, next: NextFunction) => {
+export const getMeetings = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const meetings = await meetingService.getMeetings();
+        const meetings = await meetingService.getMeetings(req.user);
         if (!meetings || meetings.length === 0) {
-            next({ statusCode: 404, message: 'Service not found' });
+            return next({ statusCode: 404, message: 'No meetings found' });
         }
         res.status(200).json(meetings);
     } catch (error: any) {
-        next({ statusCode: 500, message: 'Error fetching meetinges: ' + error.message });
+        next({ statusCode: 500, message: 'Error fetching meetings: ' + error.message });
     }
-}
+};
 
-export const getMeeting = async (req: Request, res: Response, next: NextFunction) => {
+export const getMeeting = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const meeting = await meetingService.getMeeting(req.params.id);
+        const meeting = await meetingService.getMeeting(req.params.id, req.user);
         if (!meeting) {
-            next({ statusCode: 404, message: 'Service not found' });
+            return next({ statusCode: 404, message: 'Meeting not found' });
         }
         res.status(200).json(meeting);
     } catch (error: any) {
-        next({ statusCode: 500, message: 'Error fetching meetinges: ' + error.message });
-    }
-}
-export const postMeeting = async (req: any, res: any, next: NextFunction) => {
-    try {
-        await meetingService.createMeeting(req.body , res);
-        console.log('Meeting created:', req.body);
-
-        res.status(201).send('Meeting created');
-    } catch {
-        next({ statusCode: 400, message: 'Bad request' });
-
+        next({ statusCode: 500, message: 'Error fetching meeting: ' + error.message });
     }
 };
 
-// put Meeting - עדכון פרטי בעל עסק
-export const putMeeting = async (req: any, res: any) => {
+export const postMeeting = async (req: any, res: Response, next: NextFunction) => {
     try {
-        await meetingService.updateMeetingById(req.params.id,req.params , req.body);
-        res.status(200).send('Meeting updated');
-    } catch {
-        throw { statusCode: 400, message: 'Bad request' };
+        const newMeeting = await meetingService.createMeeting(req.body, req.user);
+        res.status(201).json(newMeeting);
+    } catch (error: any) {
+        next({ statusCode: error.statusCode || 400, message: error.message });
     }
 };
 
-// delete Meeting - מחיקת פגישה
-export const deleteMeeting = async (req: any, res: any) => {
+export const putMeeting = async (req: any, res: Response, next: NextFunction) => {
     try {
-        await meetingService.deleteMeeting(req.params.id);
+        const updatedMeeting = await meetingService.updateMeetingById(req.params.id, req.body, req.user);
+        res.status(200).json(updatedMeeting);
+    } catch (error: any) {
+        next({ statusCode: error.statusCode || 400, message: error.message });
+    }
+};
+
+export const deleteMeeting = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        await meetingService.deleteMeeting(req.params.id, req.user);
         res.status(200).send('Meeting deleted');
     } catch (error: any) {
-        throw { statusCode: 404, message: 'Error deleting meeting: ' + error.message };
+        next({ statusCode: error.statusCode || 404, message: error.message });
     }
-}
-
-
-
+};

@@ -1,46 +1,48 @@
 import Meeting from '../Models/Meeting';
+import Service from '../Models/Services ';
 const { v4: uuidv4 } = require('uuid');
 
-const getMeetings = async () => {
+const getMeetings = async (currentUser: any) => {
     const meetings = await Meeting.find();
-    return meetings;
+    if (currentUser && currentUser.role === 'admin') return meetings;
+    return meetings.filter((meeting: any) => meeting.userEmail == currentUser.email);
 };
 
-const getMeeting = async (id: string) => {
-    const meeting = await Meeting.findById(id);
+const getMeeting = async (id: string, currentUser: any) => {
+    const meeting = await Meeting.findOne({ id });
+    if (!meeting) return null;
+    if (currentUser.role !== 'admin' && meeting.userEmail !== currentUser.email) return null;
     return meeting;
 };
 
-const createMeeting = async (meetingData: any, res: any) => {
+const createMeeting = async (meetingData: any, currentUser: any) => {
     const { serviceID, date, time, duration, userEmail } = meetingData;
-
+    if (currentUser.role !== 'admin' && currentUser.email !== userEmail) {
+        throw { statusCode: 403, message: 'Access denied: You can only create meetings for your own account.' };
+    }
     const hasOverlap = await hasOverlappingMeeting(serviceID, date, time, duration);
     if (hasOverlap) {
-        return res.status(400).json({ message: 'Meeting overlaps with an existing one.' });
+        throw { statusCode: 400, message: 'Meeting overlaps with existing one.' };
     }
-
+    const service = await Service.findOne({ id: serviceID });
+    if (!service) {
+        throw { statusCode: 404, message: 'Service not found.' };
+    }
     const id = uuidv4();
     const meeting = new Meeting({ id, serviceID, date, time, duration, userEmail });
-
-    try {
-        const saved = await meeting.save();
-        return res.status(201).json(saved);
-    } catch (err) {
-        return res.status(500).json({ message: 'Failed to save meeting.', error: err });
-    }
+    return await meeting.save();
 };
 
-const updateMeetingById = async (id: string, meetingData: any, res: any) => {
-    const { serviceID, date, time, duration, userEmail } = meetingData;
-
+const updateMeetingById = async (id: string, meetingData: any, currentUser: any) => {
     const meeting = await Meeting.findOne({ id });
-    if (!meeting) {
-        return res.status(404).json({ message: 'Meeting not found.' });
-    }
+    if (!meeting) throw { statusCode: 404, message: 'Meeting not found.' };
 
-    const isOverlapping = await hasOverlappingMeeting(serviceID, date, time, duration, id);
-    if (isOverlapping) {
-        return res.status(400).json({ message: 'Meeting overlaps with existing meeting.' });
+    const { serviceID, date, time, duration, userEmail } = meetingData;
+    const hasOverlap = await hasOverlappingMeeting(serviceID, date, time, duration, id);
+    if (hasOverlap) throw { statusCode: 400, message: 'Meeting overlaps with existing meeting.' };
+
+    if (currentUser.role !== 'admin' && currentUser.email !== meeting.userEmail) {
+        throw { statusCode: 403, message: 'Access denied: You can only update your own meetings.' };
     }
 
     meeting.serviceID = serviceID;
@@ -48,17 +50,16 @@ const updateMeetingById = async (id: string, meetingData: any, res: any) => {
     meeting.time = time;
     meeting.duration = duration;
     meeting.userEmail = userEmail;
-
-    try {
-        const updated = await meeting.save();
-        return res.status(200).json(updated);
-    } catch (err) {
-        return res.status(500).json({ message: 'Failed to update meeting.', error: err });
-    }
+    return await meeting.save();
 };
 
-const deleteMeeting = async (id: string) => {
-    return await Meeting.deleteOne({ id: id });
+const deleteMeeting = async (id: string, currentUser: any) => {
+    const meeting = await Meeting.findOne({ id });
+    if (!meeting) throw { statusCode: 404, message: 'Meeting not found.' };
+    if (currentUser.role !== 'admin' && meeting.userEmail !== currentUser.email) {
+        throw { statusCode: 403, message: 'Access denied: You can only delete your own meetings.' };
+    }
+    return await Meeting.deleteOne({ id });
 };
 
 const hasOverlappingMeeting = async (

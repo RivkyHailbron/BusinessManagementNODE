@@ -23,8 +23,10 @@ export const authenticateToken = (req: any, res: any, next: NextFunction) => {
     next();
   } catch (err: any) {
     console.error('JWT Error:', err.name, err.message);
-
-    res.status(403).json({ error: 'Token is not valid or expired' });
+    if (res.headersSent) {
+      return;
+    }
+    return res.status(403).json({ error: 'Token is not valid or expired' });
   }
 }
 
@@ -41,7 +43,7 @@ export const authorizeRoles = (...allowedRoles: any) => {
 export const isAuthorizeUser = (req: any, res: any, next: NextFunction) => {
   const targerEmail = req.params.email;
   const currentUser = req.user
-  if (currentUser.role === 'admin' || currentUser.email !== targerEmail) {
+  if (currentUser.role === 'admin' || currentUser.email === targerEmail) {
     
     return next();
   }

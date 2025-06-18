@@ -1,9 +1,9 @@
-import { Request, Response ,NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import userService from "../Services/UserService"
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const users = await  userService.getUsers();      
+        const users = await userService.getUsers();
         res.send(users);
     } catch (e: any) {
         next({ statusCode: 404, message: 'Error fetching services: ' + e.message });

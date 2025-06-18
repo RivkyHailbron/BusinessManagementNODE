@@ -4,7 +4,7 @@ import {  authenticateToken, authorizeRoles } from '../Middlewares/AuthMiddlewar
 
 const router = express.Router();
 
-router.get('/', authenticateToken, authorizeRoles('admin'), getBusiness);
-router.put('/:id',authenticateToken, putBusiness);
+router.get('/', authorizeRoles('admin'), getBusiness);
+router.put('/:id', putBusiness);
 
 export default router;
