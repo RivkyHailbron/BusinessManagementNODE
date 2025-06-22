@@ -16,6 +16,8 @@ const getMeeting = async (id: string, currentUser: any) => {
 };
 
 const createMeeting = async (meetingData: any, currentUser: any) => {
+    console.log('Creating meeting with data:*******************', meetingData);
+    
     const { serviceID, date, time, duration, userEmail } = meetingData;
     if (currentUser.role !== 'admin' && currentUser.email !== userEmail) {
         throw { statusCode: 403, message: 'Access denied: You can only create meetings for your own account.' };

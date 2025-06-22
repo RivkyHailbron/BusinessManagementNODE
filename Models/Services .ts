@@ -5,8 +5,7 @@ import { Schema } from 'mongoose';
 
 const serviceSchema = new Schema({
     id: {
-        type: String,
-        required: true
+        type: String
     },
     name: String,
     description: String,

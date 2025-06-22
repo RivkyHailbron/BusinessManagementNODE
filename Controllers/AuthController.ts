@@ -20,3 +20,16 @@ export const postSignIn = async (req: Request, res: Response, next: NextFunction
     next({ statusCode: 401, message: err.message });
   }
 };
+
+export const postGoogleSignIn = async (req: Request, res: Response, next: NextFunction) => {
+  const { idToken } = req.body;
+
+  try {
+    const { user, token } = await authService.googleSignIn(idToken);
+    res.status(200).json({ user, token });
+  } catch (err: any) {
+    next({ statusCode: 401, message: err.message });
+  }
+};
+
+

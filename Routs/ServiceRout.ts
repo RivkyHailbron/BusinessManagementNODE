@@ -13,8 +13,8 @@ import { authenticateToken, authorizeRoles } from '../Middlewares/AuthMiddleware
 
 router.get('/', getServices);
 router.get('/:id', getService);
-router.post('/', authorizeRoles('admin'), postService);
-router.put('/:id', authorizeRoles('admin'), putService);
-router.delete('/:id', authorizeRoles('admin'), deleteService);
+router.post('/',authenticateToken ,authorizeRoles('admin'), postService);
+router.put('/:id', authenticateToken,authorizeRoles('admin'), putService);
+router.delete('/:id',authenticateToken,  authorizeRoles('admin'), deleteService);
 
 export default router;

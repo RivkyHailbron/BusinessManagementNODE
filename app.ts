@@ -37,9 +37,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use('/auth', authRouter);
-app.use('/service', authenticateToken, serviceRouter);
+app.use('/service' , serviceRouter);
 app.use('/user', authenticateToken,  userRouter);
-app.use('/business', authenticateToken, authorizeRoles('admin'), businessRouter);
+app.use('/business', businessRouter);
 app.use('/meeting', authenticateToken, meetingRouter);
 app.use(error)
 
