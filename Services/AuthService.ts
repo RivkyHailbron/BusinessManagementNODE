@@ -50,14 +50,14 @@ const googleSignIn = async (idToken: string) => {
 
   if (!email) throw new Error('Email not found from Google');
 
-  let user = await User.findOne({ email });
+  let user: any = await User.findOne({ email });
   if (!user) {
     user = new User({ name, email, password: 'google-auth', role: 'user' });
     await user.save();
   }
 
   const token = jwt.sign(
-    { userId: user._id, email: user.email, role: user.role },
+    { userId: user.id, email: user.email, role: user.role },
     SECRET_KEY,
     { expiresIn: '7d' }
   );
